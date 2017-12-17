@@ -31,8 +31,8 @@ void main()
 {
 	int size = 32;
 
-	fstream file_inner_polygon("InnerPoints.txt");
-	fstream file_outer_polygon("OutterPoints.txt");
+	fstream file_inner_polygon("InnerPoints.txt");//"InnerPoints.txt"  test_inner
+	fstream file_outer_polygon("OutterPoints.txt");//"OutterPoints.txt"  test
 
 	Polygon innerPolygon;
 	Polygon outerPolygon;
@@ -46,11 +46,20 @@ void main()
 	m << innerPolygon;
 	m << outerPolygon;
 
-	fstream file_all_points("my_total.txt");
+	/*fstream file_all_points("my_total.txt");
 	Polygon test_total;
 	file_all_points >> test_total;
-	test_total.form_line_segments();
-	AlgorithmLineByLine alg(test_total.line_segments);
+	test_total.form_line_segments();*/
+	vector<pair<Point2f, Point2f>> all_line_segments;
+	for (size_t i = 0; i < innerPolygon.line_segments.size(); i++)
+	{
+		all_line_segments.push_back(innerPolygon.line_segments[i]);
+	}
+	for (size_t j = 0; j < outerPolygon.line_segments.size(); j++)
+	{
+		all_line_segments.push_back(outerPolygon.line_segments[j]);
+	}
+	AlgorithmLineByLine alg(all_line_segments);
 	alg.algorithm(m);
 
 	m << innerPolygon;

@@ -23,7 +23,9 @@ struct RibData
 		dx = (rib.second.x - rib.first.x) / (rib.second.y - rib.first.y);
 		x = rib.first.x + dx*(y - rib.first.y);
 		y2 = rib.second.y;
+		line = rib;
 	}
+	pair<Point, Point> line;
 };
 
 class AlgorithmLineByLine
