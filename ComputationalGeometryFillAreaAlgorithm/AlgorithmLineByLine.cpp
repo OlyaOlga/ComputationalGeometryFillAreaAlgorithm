@@ -8,7 +8,6 @@ AlgorithmLineByLine::AlgorithmLineByLine(vector<pair<Point2f,Point2f>> line_segm
 	{
 		_ribList.push_back(RibData(make_pair(line_segments[i].first, line_segments[i].second)));
 	}
-
 }
 
 

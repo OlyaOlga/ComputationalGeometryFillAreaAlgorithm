@@ -1,4 +1,5 @@
 #pragma once
+#include<iostream>
 #include<list>
 #include <map>
 #include"Polygon.h"
@@ -13,7 +14,7 @@ typedef int Y;
 
 struct RibData
 {
-	int  y;
+	double y;
 	double dx;
 	double x;
 	double y2;
@@ -51,6 +52,7 @@ private:
 	}
 	void paint_part(list<RibData>& data, Mat& mat, int y)//to implement
 	{
+		cout << y << endl;
 		for (auto i = data.begin(); i != data.end(); ++i)
 		{
 			auto next = i;
@@ -58,7 +60,14 @@ private:
 			{
 				break;
 			}
-			line(mat, Point(i->x, y),Point(next->x, y), 100);
+			cout <<'\t'<< i->x << " -> " << next->x << endl;
+
+			//for(double j = i->x; j<next->x; ++j)
+			line(mat, Point(i->x, y), Point(next->x, y), 100);
+			if ((i->dx > 0 && next->dx < 0 || i->dx < 0 && next->dx>0)&& i->x==next->x)
+			{
+				cout << "Different signs " << endl;
+			}
 			++i;
 		}
 	}
@@ -181,7 +190,7 @@ while(САР не пуст);*/
 			}*/
 			for (auto i = listOfActiveRibbs.begin(); i != listOfActiveRibbs.end(); )
 			{
-				if (y > (*i).y2)
+				if (y >= (*i).y2)
 				{
 					auto val_to_remove = i;
 					++i;
@@ -194,7 +203,6 @@ while(САР не пуст);*/
 					++i;
 				}
 			}
-
 		} while (listOfActiveRibbs.size() != 0);
 	};
 	~AlgorithmLineByLine();

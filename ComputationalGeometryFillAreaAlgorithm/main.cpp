@@ -50,6 +50,7 @@ void main()
 	Polygon test_total;
 	file_all_points >> test_total;
 	test_total.form_line_segments();*/
+
 	vector<pair<Point2f, Point2f>> all_line_segments;
 	for (size_t i = 0; i < innerPolygon.line_segments.size(); i++)
 	{
@@ -62,8 +63,8 @@ void main()
 	AlgorithmLineByLine alg(all_line_segments);
 	alg.algorithm(m);
 
-	m << innerPolygon;
-	m << outerPolygon;
+	//m << innerPolygon;
+	//m << outerPolygon;
 	Mat M;
 	cv::resize(m, M, Size(320, 320), 0, 0, cv::InterpolationFlags::INTER_NEAREST);
 
