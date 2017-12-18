@@ -36,7 +36,7 @@ public:
 
 	//map<Y, list<X>> mapxls;
 private:
-	void haveSameY(int current_y, list<RibData>& wholeList, list<RibData>& toInsert )
+	void haveSameY(double current_y, list<RibData>& wholeList, list<RibData>& toInsert )
 	{
 		for each (RibData item in wholeList)
 		{
@@ -53,6 +53,7 @@ private:
 	void paint_part(list<RibData>& data, Mat& mat, int y)//to implement
 	{
 		cout << y << endl;
+		uchar* current_line = mat.ptr<uchar>(y);
 		for (auto i = data.begin(); i != data.end(); ++i)
 		{
 			auto next = i;
@@ -63,8 +64,13 @@ private:
 			cout <<'\t'<< i->x << " -> " << next->x << endl;
 
 			//for(double j = i->x; j<next->x; ++j)
-			line(mat, Point(i->x, y), Point(next->x, y), 100);
-			if ((i->dx > 0 && next->dx < 0 || i->dx < 0 && next->dx>0)&& i->x==next->x)
+			
+			for (int j = i->x; j <= next->x; ++j)
+			{
+				current_line[j] = 100;
+			}
+			//line(mat, Point(ceil(i->x), y), Point(floor(next->x), y), 100);
+			if ((i->dx > 0 && next->dx < 0 || i->dx < 0 && next->dx>0)&& i->x == next->x)
 			{
 				cout << "Different signs " << endl;
 			}
@@ -190,7 +196,7 @@ while(САР не пуст);*/
 			}*/
 			for (auto i = listOfActiveRibbs.begin(); i != listOfActiveRibbs.end(); )
 			{
-				if (y >= (*i).y2)
+				if (y >= i->y2)
 				{
 					auto val_to_remove = i;
 					++i;
