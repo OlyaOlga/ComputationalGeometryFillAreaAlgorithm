@@ -43,13 +43,8 @@ void main()
 	outerPolygon.form_line_segments();
 
 	Mat m = Mat::zeros(Size(32, 32), CV_8UC1);
-	m << innerPolygon;
-	m << outerPolygon;
-
-	/*fstream file_all_points("my_total.txt");
-	Polygon test_total;
-	file_all_points >> test_total;
-	test_total.form_line_segments();*/
+	//m << innerPolygon;
+	//m << outerPolygon;
 
 	vector<pair<Point2f, Point2f>> all_line_segments;
 	for (size_t i = 0; i < innerPolygon.line_segments.size(); i++)

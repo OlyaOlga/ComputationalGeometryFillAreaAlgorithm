@@ -5,6 +5,7 @@
 #include"Polygon.h"
 #include <opencv2\core.hpp>
 #include <opencv2\imgproc.hpp>
+#include <opencv2\highgui.hpp>
 
 using namespace std;
 using namespace cv;
@@ -30,13 +31,9 @@ struct RibData
 };
 
 class AlgorithmLineByLine
-{
-public:
-	
-
-	//map<Y, list<X>> mapxls;
+{	
 private:
-	void haveSameY(double current_y, list<RibData>& wholeList, list<RibData>& toInsert )
+	void insert_ribs_with_y_begin(double current_y, list<RibData>& wholeList, list<RibData>& toInsert )
 	{
 		for each (RibData item in wholeList)
 		{
@@ -50,7 +47,7 @@ private:
 			return first.x < second.x;
 		});
 	}
-	void paint_part(list<RibData>& data, Mat& mat, int y)//to implement
+	void paint_part(list<RibData>& data, Mat& mat, int y)
 	{
 		cout << y << endl;
 		uchar* current_line = mat.ptr<uchar>(y);
@@ -61,19 +58,26 @@ private:
 			{
 				break;
 			}
+
 			cout <<'\t'<< i->x << " -> " << next->x << endl;
 
-			//for(double j = i->x; j<next->x; ++j)
+
+			if (i->x == next->x)
+			{
+				if (i->y < y && next->y2>y || i->y2<y && next->y>y)
+				{
+					continue;
+				}
+			}
 			
 			for (int j = i->x; j <= next->x; ++j)
 			{
 				current_line[j] = 100;
-			}
-			//line(mat, Point(ceil(i->x), y), Point(floor(next->x), y), 100);
-			if ((i->dx > 0 && next->dx < 0 || i->dx < 0 && next->dx>0)&& i->x == next->x)
-			{
-				cout << "Different signs " << endl;
-			}
+				Mat M;
+				cv::resize(mat, M, Size(320, 320), 0, 0, cv::InterpolationFlags::INTER_NEAREST);
+				imshow("", M  );
+				waitKey();
+			}			
 			++i;
 		}
 	}
@@ -88,48 +92,7 @@ private:
 	list<RibData> _ribList;
 public:
 	AlgorithmLineByLine(vector<pair<Point2f, Point2f>> p);
-	/*
-	САР = пустой;
-	y = y_список[ первый элемент ].y;
-	do
-	{
-	САР.Добавить( ребра из y-списка, у которых
-	ребро.y = y);
-	// сохраняя упорядоченность САР по возрастанию x
-	y_список.Удалить( ребра, у которых ребро.y = y );
-	Закрасить промежутки ( x_2i - 1, x_2i ) в строке y;
-	y++;
-	foreach( ребро из САР по порядку )
-	{
-	if(y > ребро.y2)
-	удалить ребро из САР;
-	else
-	{
-	ребро.x += ребро.dx;
-	while(соседнее_слева_ребро(ребро).x > ребро.x)
-	поменять местами в САР ребро с соседним;}}}
-	while(САР не пуст);
-	*/
 	
-	/*void addToLists(Polygon& p)
-	{
-		for (size_t i = 0; i < p.line_segments.size(); i++)
-		{
-			auto y = ceil(p.line_segments[i].first.y);
-			auto dx = (p.line_segments[i].second.x - p.line_segments[i].first.x) / (p.line_segments[i].second.y - p.line_segments[i].first.y);
-			auto x = p.line_segments[i].first.x + dx*(y - p.line_segments[i].first.y);
-
-			while (y <= p.line_segments[i].second.y)
-			{
-				auto current_list = mapxls[y];
-				current_list.push_back(x);
-				y++;
-				x += dx;
-			}
-		}
-	}*/
-
-
 
 	void algorithm(Mat& mat)
 	{
@@ -141,62 +104,26 @@ public:
 		list<RibData> listOfActiveRibbs;
 		auto y = _ribList.front().y;
 
-		/*
-		do
-{
-      САР.Добавить( ребра из y-списка, у которых
-                                 ребро.y = y);
-      // сохраняя упорядоченность САР по возрастанию x
-      y_список.Удалить( ребра, у которых ребро.y = y );
 
-      Закрасить промежутки ( x_2i - 1, x_2i ) в строке y;
-      y++;
-
-      foreach( ребро из САР по порядку )
-      {
-            if(y > ребро.y2)
-                  удалить ребро из САР;
-            else
-            {
-                  ребро.x += ребро.dx;
-                  while(соседнее_слева_ребро(ребро).x > ребро.x)
-                        поменять местами в САР ребро с соседним;
-            }
-      }
-}
-while(САР не пуст);*/
 		do
 		{
-			//САР.Добавить(ребра из y - списка, у которых
-			//	ребро.y = y);
-			haveSameY(y, _ribList, listOfActiveRibbs);
+			//add to listOfActiveRibs ribs, which begin with current y
+			insert_ribs_with_y_begin(y, _ribList, listOfActiveRibbs);
 
-			// сохраняя упорядоченность САР по возрастанию x
-			//y_список.Удалить(ребра, у которых ребро.y = y);
+			// delete from _ribList ribs, which begin with current y
 			_ribList.remove_if([&](RibData elem)
 			{
 				return elem.y == y;
 			});
 
-			//Закрасить промежутки(x_2i - 1, x_2i) в строке y;
-			//y++;
+			//paint (x_2i - 1, x_2i) parts in y row
 			paint_part(listOfActiveRibbs, mat, y);
 			y++;
-
-			/*foreach(ребро из САР по порядку)
-			{
-				if (y > ребро.y2)
-					удалить ребро из САР;
-				else
-				{
-					ребро.x += ребро.dx;
-					while (соседнее_слева_ребро(ребро).x > ребро.x)
-						поменять местами в САР ребро с соседним;
-				}
-			}*/
+			// for each rib from listOfActiveRibs
 			for (auto i = listOfActiveRibbs.begin(); i != listOfActiveRibbs.end(); )
 			{
-				if (y >= i->y2)
+				//check if rib ends here
+				if (y > i->y2)
 				{
 					auto val_to_remove = i;
 					++i;
@@ -204,11 +131,14 @@ while(САР не пуст);*/
 				}
 				else
 				{
+					//find value of next x
 					i->x += i->dx;
+					//sort listOfActiveRibs by x
 					local_x_sort(listOfActiveRibbs);
 					++i;
 				}
 			}
+
 		} while (listOfActiveRibbs.size() != 0);
 	};
 	~AlgorithmLineByLine();
